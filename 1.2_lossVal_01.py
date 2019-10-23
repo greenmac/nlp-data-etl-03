@@ -24,6 +24,6 @@ if __name__ == "__main__":
     dataArr = laodDataSet(r'files\dataset.data', '    ')
     # print(dataArr)
 
-    # 均職填補缺失值
+    # 均值填補缺失值
     dataMat = replaceNanWithMean(dataArr)
     print(dataMat)
