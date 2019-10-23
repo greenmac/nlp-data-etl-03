@@ -25,5 +25,5 @@ if __name__ == "__main__":
     # print(dataArr)
 
     # 均職填補缺失值
-    dataMat = replaceNanWithMean(dataArr)
-    print(dataMat)
+    # dataMat = replaceNanWithMean(dataArr)
+    # print(dataMat)
