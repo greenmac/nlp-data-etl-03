@@ -20,19 +20,67 @@ def loadDataSet():
 
 # 獲取所有詞的集合: 返回不重複元素的單詞列表
 def createVocatList(dataSet):
-    vocaSet = set([])
+    vocabSet = set([])
     for document in dataSet:
         # 運算符號 "|" 求集合聯集
-        vocaSet = vocaSet | set(document)
-    vocabList = list(vocaSet)
-    return vocaSet
+        vocabSet = vocabSet | set(document)
+    vocabList = list(vocabSet)
+    return vocabList
 
+# 特徵詞轉特徵向量:詞集模型
+def setOfWords2Vec(vocabList, dataSet):
+    setvec = []
+    for document in dataSet:
+        returnVec = [0]*len(vocabList)
+        # 如果特徵詞在詞彙列表中, 修正為1, 反之為0
+        for word in document:
+            if word in vocabList:
+                returnVec[vocabList.index(word)] = 1
+        # 追加所有文檔詞向量列表
+        setvec.append(returnVec)
+    return setvec
+
+# 特徵詞轉特徵向量:詞袋模型
+def bagOfWords2Vec(vocabList, dataSet):
+    bagvec = []
+    for document in dataSet:
+        returnVec = [0]*len(vocabList)
+        # 如果特徵詞在詞彙列表中, 修正為1, 反之為0
+        for word in document:
+            if word in vocabList:
+                returnVec[vocabList.index(word)] += 1
+        # 追加所有文檔詞向量列表
+        bagvec.append(returnVec)
+    return bagvec
+
+# 詞集模型轉化為tf-idf計算
+def TfIdf(bagvec):
+    # 詞頻TF = 某個詞在文章中出現中出現次數/文字總次數
+    tf = [word/sum(word) for word in bagvec]
+    # 逆詞頻IDF = log(與料庫中文檔總數/(包含該詞文檔數+1))
+    m = len(bagvec) # 語料文檔總數
+    ndw = sum(mat(bagvec).T != 0, axis=1).T # 包含該詞文檔數
+    idf = [log(m/(t+1)) for t in ndw]
+    tfidf = tf*np.array(idf)
+    return tfidf
 
 if __name__ == "__main__":
     # 1 印出數據集和標籤集
     dataSet, classLab = loadDataSet()
-    # print('數據集:\n', mat(dataSet), '\n標籤集:\n', classLab)
+    print('數據集:\n', mat(dataSet), '\n標籤集:\n', classLab)
 
     # 2 獲取所有文檔的詞集合
     vocabList = createVocatList(dataSet)
     print('\n詞彙列表:\n', vocabList)
+
+    # 3 特徵詞轉特徵向量:詞集模型
+    setvec = setOfWords2Vec(vocabList, dataSet)
+    print('詞集模型:\n', mat(setvec))
+
+    # 3 特徵詞轉特徵向量:詞袋模型
+    bagvec = bagOfWords2Vec(vocabList, dataSet)
+    print('詞袋模型:\n', mat(bagvec))
+
+    # 4 計算TF-IDF
+    tfidf = TfIdf(bagvec)
+    print('TF-IDF:\n', tfidf)
